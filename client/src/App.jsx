@@ -24,7 +24,8 @@ function App() {
 
     try {
       // Send request to backend
-      const response = await fetch("http://192.168.1.132:5000/attendance", {
+      const backendURL = "https://remoteattendancesystem.onrender.com";
+      const response = await fetch(`${backendURL}/attendance`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -193,7 +194,7 @@ function App() {
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
               margin: "16px 0",
-            }}>Vasavi Remote Attendance System</h1>
+            }}>Attendance System</h1>
             <p style={{ color: "#666", fontSize: "14px", marginTop: "8px" }}>{formatDate(time)}</p>
             <p style={{ fontSize: "28px", fontWeight: "bold", color: "#764ba2", fontFamily: "monospace", marginTop: "8px" }}>{formatTime(time)}</p>
           </div>
@@ -350,6 +351,51 @@ function App() {
         </div>
       </div>
 
+      {/* Download Button */}
+      <div style={{
+        position: "absolute",
+        bottom: "80px",
+        left: "50%",
+        transform: "translateX(-50%)",
+      }}>
+        <button
+          onClick={() => {
+            const backendURL = "https://remote-attendance-backend.onrender.com";
+            const downloadURL = `${backendURL}/download-attendance`;
+            
+            // Create a temporary link and trigger download
+            const link = document.createElement("a");
+            link.href = downloadURL;
+            link.download = "attendance.csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }}
+          style={{
+            padding: "12px 24px",
+            background: "linear-gradient(135deg, #10b981, #059669)",
+            color: "white",
+            fontSize: "14px",
+            fontWeight: "600",
+            border: "none",
+            borderRadius: "10px",
+            cursor: "pointer",
+            transition: "all 0.3s",
+            boxShadow: "0 10px 25px rgba(16, 185, 129, 0.3)",
+          }}
+          onMouseOver={(e) => {
+            e.target.style.transform = "translateY(-2px)";
+            e.target.style.boxShadow = "0 15px 35px rgba(16, 185, 129, 0.4)";
+          }}
+          onMouseOut={(e) => {
+            e.target.style.transform = "translateY(0)";
+            e.target.style.boxShadow = "0 10px 25px rgba(16, 185, 129, 0.3)";
+          }}
+        >
+          📥 Download Attendance Sheet
+        </button>
+      </div>
+
       {/* Footer */}
       <div style={{
         position: "absolute",
@@ -360,7 +406,7 @@ function App() {
         color: "rgba(255, 255, 255, 0.8)",
         fontSize: "12px",
       }}>
-        
+        <p style={{ margin: 0 }}>Press Enter to submit • Secure attendance system</p>
       </div>
     </div>
   );
