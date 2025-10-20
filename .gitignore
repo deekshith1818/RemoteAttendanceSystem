@@ -1,0 +1,13 @@
+# Local Netlify folder
+.netlify
+# Node modules
+server/node_modules/
+client/node_modules/
+
+# Build folders
+client/dist/
+server/build/  # if any
+
+# Environment files
+server/.env
+client/.env
