@@ -5,7 +5,6 @@ const app = express();
 
 const cors = require("cors");
 
-// Update CORS to allow your Netlify frontend
 app.use(cors({ 
   origin: [
     "https://remoteattendance.netlify.app",
@@ -19,13 +18,45 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
+// Helper function to get client IP
+function getClientIP(req) {
+  let ip = req.ip || req.connection.remoteAddress || '';
+  
+  if (ip.includes('::ffff:')) {
+    ip = ip.replace('::ffff:', '');
+  } else if (ip === '::1') {
+    ip = 'localhost';
+  }
+  
+  return ip || 'Unknown';
+}
+
+// Helper function to get IST time
+function getISTTime() {
+  const now = new Date();
+  
+  // Get UTC time and add 5:30 hours for IST
+  const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+  
+  const date = String(istTime.getDate()).padStart(2, '0');
+  const month = String(istTime.getMonth() + 1).padStart(2, '0');
+  const year = istTime.getFullYear();
+  
+  const hours = String(istTime.getHours()).padStart(2, '0');
+  const minutes = String(istTime.getMinutes()).padStart(2, '0');
+  const seconds = String(istTime.getSeconds()).padStart(2, '0');
+  
+  return `${date}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+}
+
 // POST route to mark attendance
 app.post("/attendance", (req, res) => {
   const { username } = req.body;
   if (!username) return res.status(400).json({ message: "Username required" });
 
-  const ip = req.ip.replace("::ffff:", "");
-  const timestamp = new Date().toLocaleString();
+  const ip = getClientIP(req);
+  const timestamp = getISTTime();
+  
   const record = `${username},${ip},${timestamp}\n`;
 
   fs.appendFileSync("attendance.csv", record);
